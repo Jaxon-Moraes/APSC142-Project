@@ -36,7 +36,29 @@ static void printc(char c) {
 }
 
 void print_map(void) {
-    printc(PLAYER);
+    for (int r = 0; r < width+1;r++){
+        printc(WALL);
+        printf(" ");
+
+    }
+    printc(WALL);
+    printf("\n");
+    for (int r = 0; r < height; r++){
+        printc(WALL);
+        printf(" ");
+        for (int c = 0; c<width; c++){
+            printc(map[r*width+c]);
+            printf(" ");
+        }
+         printc(WALL);
+         printf("\n");
+    }
+    for (int r = 0; r < width+1;r++){
+        printc(WALL);
+        printf(" ");
+    }
+    printc(WALL);
+    printf("\n");
 }
 
 int is_wall(int y, int x) {

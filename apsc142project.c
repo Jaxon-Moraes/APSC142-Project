@@ -66,6 +66,11 @@ int main(void) {
     // This ensures that printf writes to the console immediately, instead of buffering.
     // If you remove this, you will not be able to rely on printf to work if your program crashes.
     setbuf(stdout, NULL);
+    width = HARDCODED_WIDTH;
+    height = HARDCODED_HEIGHT;
+    map = hardcoded_map;
+    print_map();
+
 
     // For labs 2 and 3, map and dot_map must be dynamically allocated and the data from the hardcoded map
     // must be copied into them.  For lab 4, they will be allocated instead by load_map.
