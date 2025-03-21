@@ -42,14 +42,61 @@ TEST_SUITE_BEGIN("Actor tests");
 // tests for sees_player
 
 // tests for move_player
+TEST_CASE("Move player"){
+    char hardcoded_map[] = {
+        GHOST, DOT, DOT, DOT, WALL, DOT, DOT, DOT, EMPTY,
+        DOT, WALL, WALL, DOT, WALL, DOT, WALL, WALL, DOT,
+        DOT, WALL, DOT, DOT, DOT, DOT, DOT, WALL, DOT,
+        DOT, WALL, DOT, WALL, WALL, WALL, DOT, WALL, DOT,
+        DOT, DOT, DOT, DOT, PLAYER, DOT, DOT, DOT, DOT,
+        DOT, WALL, DOT, WALL, WALL, WALL, DOT, WALL, DOT,
+        DOT, WALL, DOT, DOT, DOT, DOT, DOT, WALL, DOT,
+        DOT, WALL, WALL, DOT, WALL, DOT, WALL, WALL, DOT,
+        EMPTY, DOT, DOT, DOT, WALL, DOT, DOT, DOT, GHOST
+    };
+    width = 9;
+    height = 9;
+    map = hardcoded_map;
+    dot_map = (char*)malloc(sizeof(char)*width*height);
+    for (int i =0; i< width*height;i++){
+        dot_map[i] = (map[i]== DOT)?DOT:EMPTY;
+    }
+    int y = 4;
+    int x = 4;
+    CHECK(move_player(&y,&x,UP) == MOVED_WALL);
+    CHECK(move_player(&y,&x,DOWN) == MOVED_WALL);
+    CHECK(move_player(&y,&x,LEFT) == MOVED_OKAY);
+    CHECK(move_player(&y,&x,RIGHT) == MOVED_OKAY);
+    map[3*width+4] = DOT;
+    map[5*width+4] = DOT;
+    map[4*width+3] = WALL;
+    map[4*width+5] = WALL;
+    CHECK(move_player(&y,&x,LEFT) == MOVED_WALL);
+    CHECK(move_player(&y,&x,RIGHT) == MOVED_WALL);
+    CHECK(move_player(&y,&x,DOWN) == MOVED_OKAY);
+    CHECK(move_player(&y,&x,UP) == MOVED_OKAY);
+    CHECK(move_player(&y,&x,'e') == MOVED_INVALID_DIRECTION);
+    map[4*width+4] =DOT;
+    map[0] = PLAYER;
+    y = 0;
+    x = 0;
+    CHECK(move_player(&y,&x,UP) == MOVED_WALL);
+    CHECK(move_player(&y,&x,LEFT) == MOVED_WALL);
+    map[0] = DOT;
+    map[80] = PLAYER;
+    y = 8;
+    x = 8;
+    CHECK(move_player(&y,&x,DOWN) == MOVED_WALL);
+    CHECK(move_player(&y,&x,RIGHT) == MOVED_WALL);
+}
 
 // tests for move_ghost
 
 TEST_SUITE_END();
 
 /* tests for game.c */
-TEST_SUITE_BEGIN("check_loss");
-TEST_CASE("Basic") {
+TEST_SUITE_BEGIN("Game tests");
+TEST_CASE("Check Loss") {
     int player_y = 0;
     int player_x = 0;
     int ghosts_y[NUM_GHOSTS] = {0,0};
@@ -77,14 +124,13 @@ TEST_CASE("First Ghost") {
             ghosts_y[1] = (r+1)%height;
             ghosts_x[1] = (c+1)%width;
             CHECK(check_loss(r,c,ghosts_y,ghosts_x) == YOU_LOSE);
-            printf("%d",check_loss(r,c,ghosts_y,ghosts_x));
         }
     }
 }
 TEST_CASE("Second Ghost") {
     int ghosts_y[NUM_GHOSTS] = {0,0};
     int ghosts_x[NUM_GHOSTS] = {0,0};
-    //when seccond ghost shares player coordinates (r,c)
+    //when second ghost shares player coordinates (r,c)
     for(int r =0; r < height; r++) {
         for(int c =0; c <width;c++){
             ghosts_y[1] = r;
@@ -92,9 +138,7 @@ TEST_CASE("Second Ghost") {
             ghosts_y[0] = (r+1)%height;
             ghosts_x[0] = (c+1)%width;
             CHECK(check_loss(r,c,ghosts_y,ghosts_x) == YOU_LOSE);
-            printf("%d",check_loss(r,c,ghosts_y,ghosts_x));
         }
-        printf("\n");
 
     }
 }
@@ -109,27 +153,51 @@ TEST_CASE("Both Ghosts") {
             ghosts_y[0] = r;
             ghosts_x[0] = c;
             CHECK(check_loss(r,c,ghosts_y,ghosts_x) == YOU_LOSE);
-            printf("%d",check_loss(r,c,ghosts_y,ghosts_x));
         }
-        printf("\n");
     }
 }
 TEST_CASE("Neither Ghost") {
     int ghosts_y[NUM_GHOSTS] = {0,0};
     int ghosts_x[NUM_GHOSTS] = {0,0};
-    
- //when neither ghosts shares player coodinates (r,c)
- for(int r =0; r < height; r++){
-    for(int c =0; c <width;c++){
-        ghosts_y[1] = (r+1)%height;
-        ghosts_x[1] = (c+1)%width;
-        ghosts_y[0] = (r+1)%height;
-        ghosts_x[0] = (c+1)%width;
-        CHECK(check_loss(r,c,ghosts_y,ghosts_x) == KEEP_GOING);
-        printf("%d",check_loss(r,c,ghosts_y,ghosts_x));
-    }
-     printf("\n");
-}
-}
 
+    //when neither ghosts shares player coodinates (r,c)
+    for(int r =0; r < height; r++){
+        for(int c =0; c <width;c++){
+            ghosts_y[1] = (r+1)%height;
+            ghosts_x[1] = (c+1)%width;
+            ghosts_y[0] = (r+1)%height;
+            ghosts_x[0] = (c+1)%width;
+            CHECK(check_loss(r,c,ghosts_y,ghosts_x) == KEEP_GOING);
+        }
+    }
+}
+TEST_CASE("Check Win"){
+    char hardcoded_map[] = {
+        GHOST, EMPTY, EMPTY, EMPTY, WALL, EMPTY, EMPTY, EMPTY, EMPTY,
+        EMPTY, WALL, WALL, EMPTY, WALL, EMPTY, WALL, WALL, EMPTY,
+        EMPTY, WALL, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, WALL, EMPTY,
+        EMPTY, WALL, EMPTY, WALL, WALL, WALL, EMPTY, WALL, EMPTY,
+        EMPTY, EMPTY, EMPTY, EMPTY, PLAYER, EMPTY, EMPTY, EMPTY, EMPTY,
+        EMPTY, WALL, EMPTY, WALL, WALL, WALL, EMPTY, WALL, EMPTY,
+        EMPTY, WALL, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, WALL, EMPTY,
+        EMPTY, WALL, WALL, EMPTY, WALL, EMPTY, WALL, WALL, EMPTY,
+        EMPTY, EMPTY, EMPTY, EMPTY, WALL, EMPTY, EMPTY, EMPTY, GHOST
+    };
+    width = 9;
+    height = 9;
+    map = hardcoded_map;
+    dot_map = (char*)malloc(sizeof(char)*width*height);
+    for (int i =0; i< width*height;i++){
+        dot_map[i] = (map[i]== DOT)?DOT:EMPTY;
+    }
+    CHECK(check_win() == YOU_WIN);
+    map[0] = DOT;
+    dot_map[0] = DOT;
+    CHECK(check_win() == KEEP_GOING);
+    map[0] = EMPTY;
+    dot_map[0] = EMPTY;
+    map[80] = DOT;
+    dot_map[80] = DOT;
+    CHECK(check_win() == KEEP_GOING);
+}
 TEST_SUITE_END();

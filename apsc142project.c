@@ -24,6 +24,7 @@ char *map = NULL, *dot_map = NULL;
 // width and height store the width and height of map, NOT counting outer walls
 int width, height;
 
+
 /**
  * This is the hardcoded map used for labs 1-3.
  * Once you implement load_map in lab 4 you should remove this map, as it cannot be used for the
@@ -50,6 +51,10 @@ char hardcoded_map[] = {
 // passed using function arguments.  If you add new globals, the autograder tests will fail to run
 // and you will not receive a good mark.
 
+
+// define a return code for a memory error
+#define ERR_MEMORY 4
+
 /**
  * Main entry point into your program.
  * Make sure that main returns appropriate status codes depending on what
@@ -66,14 +71,48 @@ int main(void) {
     // This ensures that printf writes to the console immediately, instead of buffering.
     // If you remove this, you will not be able to rely on printf to work if your program crashes.
     setbuf(stdout, NULL);
+
+    // set the map to point to the hardcoded map
     width = HARDCODED_WIDTH;
     height = HARDCODED_HEIGHT;
+    // we don't actually have to use dot_map for lab1
     map = hardcoded_map;
-    print_map();
+    // allocate space for the dots
+    dot_map = malloc(width * height);
+    if (dot_map == NULL) {
+        return ERR_MEMORY;
+    }
+    // copy dots into dot_map
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            if (map[y * width + x] == DOT) {
+                dot_map[y * width + x] = DOT;
+            } else {
+                dot_map[y * width + x] = EMPTY;
+            }
+        }
+    }
 
+    // input holds the user input
+    char input = 0;
+    // we need the player position - we can hardcode it for now
+    int player_x = 4, player_y = 4;
 
-    // For labs 2 and 3, map and dot_map must be dynamically allocated and the data from the hardcoded map
-    // must be copied into them.  For lab 4, they will be allocated instead by load_map.
+    // loop until we hit the end of input
+    while (input != EOF) {
+        // print the map
+        print_map();
+
+        // get a character - blocks until one is input
+        input = getch();
+
+        // move the player
+        move_player(&player_y, &player_x, input);
+
+    } // quit if we hit the end of input
+
+    // free the dot_map
+    free(dot_map);
 
     // You must return the correct error code from defines.h from main depending on what happened
     return NO_ERROR;

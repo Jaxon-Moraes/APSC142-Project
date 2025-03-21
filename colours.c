@@ -63,10 +63,10 @@
  */
 int change_text_colour(int colour) {
     switch (colour) {
-        case BLUE:   printf("\x1B[34m"); break;
-        case YELLOW: printf("\x1B[33m"); break;
-        case PINK:   printf("\x1B[35m"); break;
-        case WHITE:  printf("\x1B[0m"); break;
+        case BLUE:   printf("\x1b[34m"); break;
+        case YELLOW: printf("\x1b[33m"); break;
+        case PINK:   printf("\x1b[35m"); break;
+        case WHITE:  printf("\x1b[0m"); break;
         default:     return 1;
     }
     return 0;

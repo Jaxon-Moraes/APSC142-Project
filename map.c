@@ -50,8 +50,8 @@ void print_map(void) {
             printc(map[r*width+c]);
             printf(" ");
         }
-         printc(WALL);
-         printf("\n");
+        printc(WALL);
+        printf("\n");
     }
     for (int r = 0; r < width+1;r++){
         printc(WALL);

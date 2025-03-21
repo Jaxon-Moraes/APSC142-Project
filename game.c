@@ -4,19 +4,26 @@
 #include "defines.h"
 #include "game.h"
 
+#define NUM_GHOSTS 2
 
 extern char * map, * dot_map;
 extern int height;
 extern int width;
 
 int check_win(void) {
-    return KEEP_GOING;
+    int size = height*width;
+    for(int i = 0; i< size; i++){
+        if (dot_map[i] == '.'||map[i] == '.'){
+            return KEEP_GOING;
+        }
+    }
+    return YOU_WIN;
 }
 
 // Checks if the player has been caught by a ghost
 /*
 *player_y is the player's y coordinates (the height)
-* player_x is the player's x coordinates(the width)
+* player_x is the player's x coordinates(thewidth)
 * ghosts_y is the ghost's y coordinates (the height)
 * ghosts_x is the ghost's x coordinates (the width)
 * YOU_LOSE 0 is when a ghost catches a player
@@ -30,5 +37,6 @@ int check_loss(int player_y, int player_x, int ghosts_y[NUM_GHOSTS], int ghosts_
         }
     }
     return KEEP_GOING;
+
 }
 
